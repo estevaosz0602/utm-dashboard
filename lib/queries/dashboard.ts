@@ -13,23 +13,35 @@ export async function getSummaryMetrics(
   to: Date
 ): Promise<SummaryMetrics> {
   const supabase = createClient()
-  const { data, error } = await supabase.rpc("get_summary_metrics", {
-    p_user_id: userId,
-    p_from: from.toISOString(),
-    p_to: to.toISOString(),
-  })
-  if (error || !data) {
-    return {
-      approved_count: 0,
-      pending_count: 0,
-      refunded_count: 0,
-      cancelled_count: 0,
-      total_revenue: 0,
-      pending_revenue: 0,
-      avg_ticket: 0,
+  const { data } = await supabase
+    .from("sales")
+    .select("status, sale_amount")
+    .eq("user_id", userId)
+    .gte("sale_date", from.toISOString())
+    .lte("sale_date", to.toISOString())
+
+  const empty: SummaryMetrics = {
+    approved_count: 0, pending_count: 0, refunded_count: 0,
+    cancelled_count: 0, total_revenue: 0, pending_revenue: 0, avg_ticket: 0,
+  }
+  if (!data || data.length === 0) return empty
+
+  for (const row of data) {
+    const amt = row.sale_amount ?? 0
+    if (row.status === "approved") {
+      empty.approved_count++
+      empty.total_revenue += amt
+    } else if (row.status === "pending") {
+      empty.pending_count++
+      empty.pending_revenue += amt
+    } else if (row.status === "refunded") {
+      empty.refunded_count++
+    } else if (row.status === "cancelled" || row.status === "chargeback") {
+      empty.cancelled_count++
     }
   }
-  return data[0] as SummaryMetrics
+  empty.avg_ticket = empty.approved_count > 0 ? empty.total_revenue / empty.approved_count : 0
+  return empty
 }
 
 export async function getRevenueByDay(
