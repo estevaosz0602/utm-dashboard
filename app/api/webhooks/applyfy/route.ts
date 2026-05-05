@@ -4,21 +4,11 @@ import { normalizeApplyfy } from "@/lib/webhooks/applyfy"
 import { sendPushToUser } from "@/lib/push"
 import { formatCurrency } from "@/lib/utils"
 
+const USER_ID = process.env.APP_USER_ID!
+
 export async function POST(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token")
-  if (!token) {
-    return NextResponse.json({ error: "Token required" }, { status: 401 })
-  }
-
-  const supabase = createServiceClient()
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("webhook_token", token)
-    .single()
-
-  if (!profile) {
+  if (!token || token !== process.env.WEBHOOK_SECRET) {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 })
   }
 
@@ -34,26 +24,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 })
   }
 
-  const { error } = await supabase.from("sales").upsert(
-    {
-      user_id: profile.id,
-      ...normalized,
-    },
-    {
-      onConflict: "user_id,platform,platform_unique_key",
-      ignoreDuplicates: false,
-    }
+  const supabase = createServiceClient()
+  await supabase.from("sales").upsert(
+    { user_id: USER_ID, ...normalized },
+    { onConflict: "user_id,platform,platform_unique_key", ignoreDuplicates: false }
   )
 
-  if (error) {
-    console.error("[Applyfy webhook] DB error:", error)
-  }
-
   if (normalized.status === "approved") {
-    sendPushToUser(profile.id, {
+    sendPushToUser(USER_ID, {
       title: "Nova venda aprovada!",
       body: `${formatCurrency(normalized.sale_amount)} — ${normalized.customer_name ?? normalized.customer_email ?? "Cliente"}${normalized.utm_source ? ` • ${normalized.utm_source}` : ""}`,
-      url: "/dashboard",
     }).catch(console.error)
   }
 

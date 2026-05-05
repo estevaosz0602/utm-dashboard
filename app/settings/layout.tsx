@@ -1,22 +1,10 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
 import Sidebar from "@/components/dashboard/Sidebar"
 
-export default async function SettingsLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/login")
-
+export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
-      <Sidebar email={user.email ?? ""} />
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      <Sidebar />
+      <main className="flex-1 overflow-auto">{children}</main>
     </div>
   )
 }

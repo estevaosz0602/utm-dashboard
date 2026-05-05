@@ -1,9 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { BarChart3, Settings, LogOut } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
+import { usePathname } from "next/navigation"
+import { BarChart3, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const NAV = [
@@ -11,16 +10,8 @@ const NAV = [
   { href: "/settings", label: "Configurações", icon: Settings },
 ]
 
-export default function Sidebar({ email }: { email: string }) {
+export default function Sidebar() {
   const pathname = usePathname()
-  const router = useRouter()
-  const supabase = createClient()
-
-  async function handleSignOut() {
-    await supabase.auth.signOut()
-    router.push("/login")
-    router.refresh()
-  }
 
   return (
     <aside className="w-56 bg-white border-r border-gray-200 flex flex-col shrink-0">
@@ -48,17 +39,6 @@ export default function Sidebar({ email }: { email: string }) {
           </Link>
         ))}
       </nav>
-
-      <div className="p-3 border-t border-gray-100">
-        <p className="text-xs text-gray-400 truncate px-3 mb-2">{email}</p>
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition-colors w-full"
-        >
-          <LogOut size={16} />
-          Sair
-        </button>
-      </div>
     </aside>
   )
 }

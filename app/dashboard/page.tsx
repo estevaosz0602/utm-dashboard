@@ -1,7 +1,5 @@
 export const dynamic = "force-dynamic"
 
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
 import {
   getSummaryMetrics,
   getRevenueByDay,
@@ -19,26 +17,24 @@ import DateRangeFilter, { getDateRange } from "@/components/dashboard/DateRangeF
 import PushPermissionButton from "@/components/PushPermissionButton"
 import { Suspense } from "react"
 
+const USER_ID = process.env.APP_USER_ID!
+
 interface PageProps {
   searchParams: { days?: string }
 }
 
 export default async function DashboardPage({ searchParams }: PageProps) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/login")
-
   const { from, to } = getDateRange(searchParams.days ?? "7")
 
   const [metrics, revenueByDay, salesByStatus, utmSource, utmMedium, utmCampaign, recentSales] =
     await Promise.all([
-      getSummaryMetrics(user.id, from, to),
-      getRevenueByDay(user.id, from, to),
-      getSalesByStatus(user.id, from, to),
-      getUtmBreakdown(user.id, from, to, "utm_source"),
-      getUtmBreakdown(user.id, from, to, "utm_medium"),
-      getUtmBreakdown(user.id, from, to, "utm_campaign"),
-      getRecentSales(user.id, from, to),
+      getSummaryMetrics(USER_ID, from, to),
+      getRevenueByDay(USER_ID, from, to),
+      getSalesByStatus(USER_ID, from, to),
+      getUtmBreakdown(USER_ID, from, to, "utm_source"),
+      getUtmBreakdown(USER_ID, from, to, "utm_medium"),
+      getUtmBreakdown(USER_ID, from, to, "utm_campaign"),
+      getRecentSales(USER_ID, from, to),
     ])
 
   const avgTicket = metrics.approved_count > 0
@@ -47,7 +43,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
         <div className="flex items-center gap-3">
@@ -58,7 +53,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           title="Receita aprovada"
@@ -85,7 +79,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         />
       </div>
 
-      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
           <RevenueChart data={revenueByDay} />
@@ -93,7 +86,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         <SalesByStatusChart data={salesByStatus} />
       </div>
 
-      {/* UTM Breakdown */}
       <UtmBreakdownTable
         data={{
           utm_source: utmSource,
@@ -102,7 +94,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         }}
       />
 
-      {/* Recent Sales */}
       <RecentSalesTable
         initialData={recentSales.data}
         initialCount={recentSales.count}
