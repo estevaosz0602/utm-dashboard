@@ -69,7 +69,7 @@ export default function PushPermissionButton() {
       <button
         onClick={unsubscribe}
         disabled={loading}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-50 text-green-700 hover:bg-green-100 transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 transition-colors disabled:opacity-50"
         title="Notificações ativas — clique para desativar"
       >
         <Bell size={13} />
@@ -82,7 +82,7 @@ export default function PushPermissionButton() {
     <button
       onClick={subscribe}
       disabled={loading || status === "denied"}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors disabled:opacity-50"
+      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 transition-colors disabled:opacity-50"
       title={status === "denied" ? "Permissão negada no browser" : "Ativar notificações push"}
     >
       <BellOff size={13} />

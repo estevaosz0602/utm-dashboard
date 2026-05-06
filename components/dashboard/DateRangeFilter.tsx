@@ -23,7 +23,7 @@ export default function DateRangeFilter() {
   }
 
   return (
-    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+    <div className="flex items-center gap-1 rounded-lg p-1 border border-dash-border" style={{ background: "#0f1729" }}>
       {PRESETS.map(({ label, days }) => (
         <button
           key={days}
@@ -31,8 +31,8 @@ export default function DateRangeFilter() {
           className={cn(
             "px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
             String(days) === currentDays
-              ? "bg-white shadow-sm text-gray-900"
-              : "text-gray-500 hover:text-gray-700"
+              ? "bg-blue-500/20 text-blue-400"
+              : "text-dash-muted hover:text-dash-text"
           )}
         >
           {label}

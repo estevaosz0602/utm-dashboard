@@ -6,111 +6,68 @@ import { formatCurrency, formatDate } from "@/lib/utils"
 import SaleStatusBadge from "./SaleStatusBadge"
 import { Search, ChevronLeft, ChevronRight } from "lucide-react"
 
-interface RecentSalesTableProps {
-  initialData: Sale[]
-  initialCount: number
-}
-
 const PAYMENT_LABELS: Record<string, string> = {
-  credit_card: "Cartão",
-  pix: "Pix",
-  billet: "Boleto",
-  debit_card: "Débito",
+  credit_card: "Cartão", pix: "Pix", billet: "Boleto", debit_card: "Débito",
 }
-
 const PLATFORM_LABELS: Record<string, string> = {
-  perfectpay: "PerfectPay",
-  applyfy: "Applyfy",
+  perfectpay: "PerfectPay", applyfy: "Applyfy",
 }
 
-export default function RecentSalesTable({
-  initialData,
-  initialCount,
-}: RecentSalesTableProps) {
+export default function RecentSalesTable({ initialData, initialCount }: { initialData: Sale[]; initialCount: number }) {
   const [search, setSearch] = useState("")
-  const [data] = useState(initialData)
   const [page] = useState(0)
-  const count = initialCount
 
   const filtered = search
-    ? data.filter(
-        (s) =>
-          s.customer_email?.toLowerCase().includes(search.toLowerCase()) ||
-          s.customer_name?.toLowerCase().includes(search.toLowerCase()) ||
-          s.external_code?.toLowerCase().includes(search.toLowerCase())
+    ? initialData.filter(s =>
+        s.customer_email?.toLowerCase().includes(search.toLowerCase()) ||
+        s.customer_name?.toLowerCase().includes(search.toLowerCase()) ||
+        s.external_code?.toLowerCase().includes(search.toLowerCase())
       )
-    : data
+    : initialData
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200">
-      <div className="p-5 border-b border-gray-100 flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-gray-700">Vendas recentes</p>
+    <div className="rounded-xl border border-dash-border" style={{ background: "#131f35" }}>
+      <div className="p-4 border-b border-dash-border flex items-center justify-between gap-3">
+        <p className="text-sm font-semibold text-dash-text">Vendas recentes</p>
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-dash-muted" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={e => setSearch(e.target.value)}
             placeholder="Buscar..."
-            className="pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
+            className="pl-8 pr-3 py-1.5 text-xs border border-dash-border rounded-lg focus:outline-none focus:border-blue-500 w-44 text-dash-text"
+            style={{ background: "#0f1729" }}
           />
         </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-gray-100 bg-gray-50">
-              <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Data</th>
-              <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Cliente</th>
-              <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Produto</th>
-              <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Plataforma</th>
-              <th className="text-right py-2.5 px-4 text-xs font-medium text-gray-500">Valor</th>
-              <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Pagamento</th>
-              <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Status</th>
-              <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">UTM Source</th>
-              <th className="text-left py-2.5 px-4 text-xs font-medium text-gray-500">Campaign</th>
+            <tr className="border-b border-dash-border">
+              {["Data", "Cliente", "Produto", "Plataforma", "Valor", "Pagamento", "Status", "UTM Source", "Campaign"].map(h => (
+                <th key={h} className="text-left px-4 py-2.5 font-medium text-dash-muted whitespace-nowrap">{h}</th>
+              ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody>
             {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={9} className="py-12 text-center text-gray-400 text-sm">
-                  Nenhuma venda encontrada
-                </td>
-              </tr>
+              <tr><td colSpan={9} className="text-center py-12 text-dash-muted">Nenhuma venda encontrada</td></tr>
             ) : (
-              filtered.map((sale) => (
-                <tr key={sale.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-3 px-4 text-gray-500 whitespace-nowrap text-xs">
-                    {formatDate(sale.sale_date)}
+              filtered.map(sale => (
+                <tr key={sale.id} className="border-b border-dash-border/40 hover:bg-dash-border/20 transition-colors">
+                  <td className="px-4 py-3 text-dash-muted whitespace-nowrap">{formatDate(sale.sale_date)}</td>
+                  <td className="px-4 py-3 max-w-[140px]">
+                    <p className="text-dash-text font-medium truncate">{sale.customer_name ?? "-"}</p>
+                    <p className="text-dash-muted truncate">{sale.customer_email}</p>
                   </td>
-                  <td className="py-3 px-4 max-w-[160px]">
-                    <p className="font-medium text-gray-800 truncate text-xs">
-                      {sale.customer_name ?? "-"}
-                    </p>
-                    <p className="text-gray-400 truncate text-xs">{sale.customer_email}</p>
-                  </td>
-                  <td className="py-3 px-4 text-gray-600 text-xs max-w-[140px] truncate">
-                    {sale.product_name ?? "-"}
-                  </td>
-                  <td className="py-3 px-4 text-gray-500 text-xs whitespace-nowrap">
-                    {PLATFORM_LABELS[sale.platform] ?? sale.platform}
-                  </td>
-                  <td className="py-3 px-4 text-right font-semibold text-gray-800 text-xs whitespace-nowrap">
-                    {formatCurrency(sale.sale_amount)}
-                  </td>
-                  <td className="py-3 px-4 text-gray-500 text-xs">
-                    {PAYMENT_LABELS[sale.payment_method ?? ""] ?? sale.payment_method ?? "-"}
-                  </td>
-                  <td className="py-3 px-4">
-                    <SaleStatusBadge status={sale.status} />
-                  </td>
-                  <td className="py-3 px-4 text-gray-500 text-xs truncate max-w-[100px]">
-                    {sale.utm_source ?? "-"}
-                  </td>
-                  <td className="py-3 px-4 text-gray-500 text-xs truncate max-w-[120px]">
-                    {sale.utm_campaign ?? "-"}
-                  </td>
+                  <td className="px-4 py-3 text-dash-muted max-w-[120px] truncate">{sale.product_name ?? "-"}</td>
+                  <td className="px-4 py-3 text-dash-muted whitespace-nowrap">{PLATFORM_LABELS[sale.platform] ?? sale.platform}</td>
+                  <td className="px-4 py-3 text-green-400 font-bold whitespace-nowrap">{formatCurrency(sale.sale_amount)}</td>
+                  <td className="px-4 py-3 text-dash-muted">{PAYMENT_LABELS[sale.payment_method ?? ""] ?? sale.payment_method ?? "-"}</td>
+                  <td className="px-4 py-3"><SaleStatusBadge status={sale.status} /></td>
+                  <td className="px-4 py-3 text-dash-muted max-w-[100px] truncate">{sale.utm_source ?? "-"}</td>
+                  <td className="px-4 py-3 text-dash-muted max-w-[120px] truncate">{sale.utm_campaign ?? "-"}</td>
                 </tr>
               ))
             )}
@@ -118,20 +75,14 @@ export default function RecentSalesTable({
         </table>
       </div>
 
-      <div className="p-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-        <span>{count} vendas no período</span>
+      <div className="p-4 border-t border-dash-border flex items-center justify-between text-xs text-dash-muted">
+        <span>{initialCount} vendas no período</span>
         <div className="flex items-center gap-2">
-          <button
-            disabled={page === 0}
-            className="p-1 rounded hover:bg-gray-100 disabled:opacity-30"
-          >
+          <button disabled={page === 0} className="p-1 rounded hover:bg-dash-border disabled:opacity-30">
             <ChevronLeft size={14} />
           </button>
-          <span>Página {page + 1}</span>
-          <button
-            disabled={(page + 1) * 25 >= count}
-            className="p-1 rounded hover:bg-gray-100 disabled:opacity-30"
-          >
+          <span>Pág. {page + 1}</span>
+          <button disabled={(page + 1) * 25 >= initialCount} className="p-1 rounded hover:bg-dash-border disabled:opacity-30">
             <ChevronRight size={14} />
           </button>
         </div>

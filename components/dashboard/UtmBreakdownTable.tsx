@@ -14,60 +14,53 @@ const TABS = [
 
 type UtmCol = (typeof TABS)[number]["key"]
 
-interface UtmBreakdownTableProps {
-  data: Partial<Record<UtmCol, UtmBreakdownRow[]>>
-}
-
-export default function UtmBreakdownTable({ data }: UtmBreakdownTableProps) {
+export default function UtmBreakdownTable({ data }: { data: Partial<Record<UtmCol, UtmBreakdownRow[]>> }) {
   const [activeTab, setActiveTab] = useState<UtmCol>("utm_source")
   const rows = data[activeTab] ?? []
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5">
-      <p className="text-sm font-semibold text-gray-700 mb-4">Atribuição UTM</p>
-
-      <div className="flex gap-1 mb-4 overflow-x-auto">
-        {TABS.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
-              activeTab === key
-                ? "bg-blue-50 text-blue-700"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+    <div className="rounded-xl border border-dash-border" style={{ background: "#131f35" }}>
+      <div className="p-4 border-b border-dash-border flex items-center justify-between">
+        <p className="text-sm font-semibold text-dash-text">Atribuição UTM</p>
+        <div className="flex gap-1">
+          {TABS.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                activeTab === key
+                  ? "bg-blue-500/20 text-blue-400"
+                  : "text-dash-muted hover:text-dash-text"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {rows.length === 0 ? (
-        <p className="text-sm text-gray-400 text-center py-8">Nenhum dado</p>
+        <p className="text-dash-muted text-sm text-center py-10">Nenhum dado no período</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500">Valor</th>
-                <th className="text-right py-2 px-1 text-xs font-medium text-gray-500">Vendas</th>
-                <th className="text-right py-2 px-1 text-xs font-medium text-gray-500">Receita</th>
-                <th className="text-right py-2 px-1 text-xs font-medium text-gray-500">%</th>
+              <tr className="border-b border-dash-border">
+                <th className="text-left px-4 py-2.5 text-xs font-medium text-dash-muted">Valor</th>
+                <th className="text-right px-4 py-2.5 text-xs font-medium text-dash-muted">Vendas</th>
+                <th className="text-right px-4 py-2.5 text-xs font-medium text-dash-muted">Receita</th>
+                <th className="text-right px-4 py-2.5 text-xs font-medium text-dash-muted">%</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody>
               {rows.map((row, i) => (
-                <tr key={i} className="hover:bg-gray-50">
-                  <td className="py-2 px-1 text-gray-800 font-medium max-w-[180px] truncate">
+                <tr key={i} className="border-b border-dash-border/50 hover:bg-dash-border/20 transition-colors">
+                  <td className="px-4 py-2.5 text-dash-text font-medium truncate max-w-[200px]">
                     {row.utm_value ?? "(none)"}
                   </td>
-                  <td className="py-2 px-1 text-right text-gray-600">{row.sales_count}</td>
-                  <td className="py-2 px-1 text-right text-gray-800 font-medium">
-                    {formatCurrency(row.revenue)}
-                  </td>
-                  <td className="py-2 px-1 text-right">
-                    <span className="text-xs text-gray-500">{row.pct}%</span>
-                  </td>
+                  <td className="px-4 py-2.5 text-right text-dash-muted">{row.sales_count}</td>
+                  <td className="px-4 py-2.5 text-right text-green-400 font-semibold">{formatCurrency(row.revenue)}</td>
+                  <td className="px-4 py-2.5 text-right text-dash-muted text-xs">{row.pct}%</td>
                 </tr>
               ))}
             </tbody>

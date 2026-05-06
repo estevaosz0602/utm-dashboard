@@ -23,30 +23,31 @@ export default function WebhookUrlCard({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+    <div className="rounded-xl border border-dash-border p-5 space-y-4" style={{ background: "#131f35" }}>
       <div>
-        <p className="font-semibold text-gray-900">{platform}</p>
-        <p className="text-xs text-gray-500 mt-0.5">{instructions}</p>
+        <p className="font-semibold text-dash-text">{platform}</p>
+        <p className="text-xs text-dash-muted mt-0.5">{instructions}</p>
       </div>
 
       <div className="flex gap-2">
         <input
           readOnly
           value={webhookUrl}
-          className="flex-1 text-xs font-mono bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-700 focus:outline-none"
+          className="flex-1 text-xs font-mono border border-dash-border rounded-lg px-3 py-2 text-dash-muted focus:outline-none"
+          style={{ background: "#0f1729" }}
         />
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors text-xs font-medium whitespace-nowrap"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors text-xs font-medium whitespace-nowrap"
         >
           {copied ? <Check size={13} /> : <Copy size={13} />}
           {copied ? "Copiado!" : "Copiar"}
         </button>
       </div>
 
-      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">
-        <span className="font-medium text-gray-700">Método:</span> POST &nbsp;|&nbsp;
-        <span className="font-medium text-gray-700">Content-Type:</span> application/json
+      <div className="text-xs text-dash-muted rounded-lg px-3 py-2 border border-dash-border" style={{ background: "#0f1729" }}>
+        <span className="font-medium text-dash-text">Método:</span> POST &nbsp;|&nbsp;
+        <span className="font-medium text-dash-text">Content-Type:</span> application/json
       </div>
     </div>
   )

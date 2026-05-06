@@ -1,18 +1,27 @@
-import { cn } from "@/lib/utils"
-
 interface MetricCardProps {
   title: string
   value: string
   subtitle?: string
-  valueClass?: string
+  valueColor?: "default" | "green" | "blue" | "yellow"
+  info?: string
 }
 
-export default function MetricCard({ title, value, subtitle, valueClass }: MetricCardProps) {
+const VALUE_COLORS = {
+  default: "text-white",
+  green: "text-green-400",
+  blue: "text-blue-400",
+  yellow: "text-yellow-400",
+}
+
+export default function MetricCard({ title, value, subtitle, valueColor = "default", info }: MetricCardProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5">
-      <p className="text-sm text-gray-500 font-medium">{title}</p>
-      <p className={cn("text-2xl font-bold mt-1 text-gray-900", valueClass)}>{value}</p>
-      {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+    <div className="rounded-xl p-4 border border-dash-border" style={{ background: "#131f35" }}>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs text-dash-muted font-medium">{title}</p>
+        {info && <span className="text-dash-muted text-xs">ⓘ</span>}
+      </div>
+      <p className={`text-xl font-bold ${VALUE_COLORS[valueColor]}`}>{value}</p>
+      {subtitle && <p className="text-xs text-dash-muted mt-1">{subtitle}</p>}
     </div>
   )
 }

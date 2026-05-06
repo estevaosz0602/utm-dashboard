@@ -43,43 +43,51 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     : 0
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-5">
+      {/* Filter bar */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
-        <div className="flex items-center gap-3">
-          <PushPermissionButton />
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-dash-muted">Período de Visualização</span>
           <Suspense>
             <DateRangeFilter />
           </Suspense>
         </div>
+        <PushPermissionButton />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* KPI cards — row 1 */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         <MetricCard
-          title="Receita aprovada"
+          title="Faturamento Líquido"
           value={formatCurrency(metrics.total_revenue)}
-          subtitle={`${metrics.approved_count} vendas`}
-          valueClass="text-green-700"
+          subtitle={`${metrics.approved_count} aprovadas`}
+          valueColor="green"
         />
         <MetricCard
-          title="Receita pendente"
+          title="Vendas Pendentes"
           value={formatCurrency(metrics.pending_revenue)}
           subtitle={`${metrics.pending_count} aguardando`}
-          valueClass="text-yellow-600"
+          valueColor="yellow"
         />
         <MetricCard
-          title="Ticket médio"
+          title="Ticket Médio"
           value={formatCurrency(avgTicket)}
-          subtitle="vendas aprovadas"
+          subtitle="por venda aprovada"
+          valueColor="blue"
         />
         <MetricCard
           title="Reembolsos"
           value={String(metrics.refunded_count)}
           subtitle={`${metrics.cancelled_count} cancelados`}
-          valueClass="text-blue-600"
+        />
+        <MetricCard
+          title="Total de Vendas"
+          value={String(metrics.approved_count + metrics.pending_count)}
+          subtitle="no período"
         />
       </div>
 
+      {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
           <RevenueChart data={revenueByDay} />
