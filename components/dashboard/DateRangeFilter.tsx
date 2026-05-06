@@ -2,7 +2,6 @@
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { subDays } from "date-fns"
 
 const PRESETS = [
   { label: "Hoje", days: 0 },
@@ -41,11 +40,4 @@ export default function DateRangeFilter() {
       ))}
     </div>
   )
-}
-
-export function getDateRange(daysParam: string | null) {
-  const days = parseInt(daysParam ?? "7", 10)
-  const to = new Date()
-  const from = days === 0 ? new Date(to.getFullYear(), to.getMonth(), to.getDate()) : subDays(to, days)
-  return { from, to }
 }
