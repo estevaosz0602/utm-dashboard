@@ -43,15 +43,12 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     : 0
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="p-3 sm:p-6 space-y-4">
       {/* Filter bar */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-dash-muted">Período de Visualização</span>
-          <Suspense>
-            <DateRangeFilter />
-          </Suspense>
-        </div>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <Suspense>
+          <DateRangeFilter />
+        </Suspense>
         <PushPermissionButton />
       </div>
 
